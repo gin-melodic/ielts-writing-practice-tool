@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雅思写作模考练习 - IELTS Writing Practice</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自定义字体，模拟考试环境的清爽感 */
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        /* 隐藏数字输入框的箭头 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* 自定义滚动条 */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-8">
+
+    <!-- 主容器 -->
+    <div class="w-full max-w-5xl bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+        
+        <!-- 顶部控制栏 (Header & Timer) -->
+        <div class="bg-slate-800 text-white p-6 shadow-md">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                
+                <!-- 标题与模式选择 -->
+                <div class="flex flex-col gap-2 text-center md:text-left">
+                    <h1 class="text-2xl font-bold tracking-wide"><i class="fa-solid fa-pen-nib mr-2"></i>雅思写作练习</h1>
+                    <div class="flex gap-2 justify-center md:justify-start">
+                        <button onclick="setMode(20)" id="btn-20" class="mode-btn px-3 py-1 text-sm rounded transition bg-blue-600 hover:bg-blue-500 font-medium ring-2 ring-blue-400">Task 1 (20m)</button>
+                        <button onclick="setMode(30)" id="btn-30" class="mode-btn px-3 py-1 text-sm rounded transition bg-slate-700 hover:bg-slate-600 text-gray-300">Task 2 (30m)</button>
+                    </div>
+                </div>
+
+                <!-- 倒计时显示 -->
+                <div class="flex flex-col items-center">
+                    <div id="timer-display" class="text-6xl font-mono font-bold tracking-wider tabular-nums text-white">20:00</div>
+                    <div id="timer-status" class="text-xs text-gray-400 mt-1 uppercase tracking-widest">Ready</div>
+                </div>
+
+                <!-- 控制按钮 -->
+                <div class="flex gap-3">
+                    <button id="start-btn" onclick="toggleTimer()" class="w-32 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> <span id="start-text">开始</span>
+                    </button>
+                    <button onclick="resetTimer()" class="w-12 px-0 py-3 bg-slate-600 hover:bg-slate-500 text-gray-200 rounded-lg transition shadow flex items-center justify-center" title="重置计时">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="p-6 md:p-8 space-y-6">
+            
+            <!-- 题目输入区 (不计字数) -->
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                    <i class="fa-regular fa-clipboard mr-1"></i> 题目区域 (Question Prompt)
+                </label>
+                <textarea 
+                    id="question-area"
+                    class="w-full h-24 p-4 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y text-sm transition"
+                    placeholder="请在此处粘贴或输入雅思写作题目（此区域内容不计入字数统计）..."></textarea>
+            </div>
+
+            <!-- 答题区 (核心功能) -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-end">
+                    <label class="block text-sm font-semibold text-gray-600 uppercase tracking-wide">
+                        <i class="fa-regular fa-file-lines mr-1"></i> 答题区域 (Answer Sheet)
+                    </label>
+                    <div class="text-sm bg-blue-50 text-blue-800 px-3 py-1 rounded-full font-medium border border-blue-100">
+                        Word Count: <span id="word-count" class="font-bold text-lg">0</span>
+                    </div>
+                </div>
+                
+                <!-- 
+                     spellcheck="false" 关闭拼写检查 
+                     min-h-[500px] 保证足够大的书写区域
+                -->
+                <textarea 
+                    id="answer-area"
+                    spellcheck="false"
+                    class="w-full min-h-[500px] p-6 text-lg leading-relaxed text-gray-800 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none resize-y shadow-inner font-sans"
+                    placeholder="Start writing your answer here... (Spell check is disabled)"
+                ></textarea>
+            </div>
+
+        </div>
+
+        <!-- 底部工具栏 -->
+        <div class="bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center text-sm text-gray-500">
+            <div>
+                提示：Task 1 建议 150+ 词，Task 2 建议 250+ 词。
+            </div>
+            <button onclick="copyText()" class="text-blue-600 hover:text-blue-800 hover:underline font-medium transition">
+                <i class="fa-regular fa-copy mr-1"></i> 复制答案
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript 逻辑 -->
+    <script>
+        // 状态变量
+        let timeLeft = 20 * 60; // 默认 20 分钟 (秒)
+        let totalTime = 20 * 60;
+        let timerId = null;
+        let isRunning = false;
+        let currentMode = 20;
+
+        // DOM 元素
+        const displayEl = document.getElementById('timer-display');
+        const statusEl = document.getElementById('timer-status');
+        const startBtn = document.getElementById('start-btn');
+        const startText = document.getElementById('start-text');
+        const startIcon = startBtn.querySelector('i');
+        const answerArea = document.getElementById('answer-area');
+        const wordCountEl = document.getElementById('word-count');
+        const btn20 = document.getElementById('btn-20');
+        const btn30 = document.getElementById('btn-30');
+
+        // 初始化
+        updateDisplay();
+
+        // 1. 计时器逻辑
+        function setMode(minutes) {
+            pauseTimer();
+            currentMode = minutes;
+            totalTime = minutes * 60;
+            timeLeft = totalTime;
+            
+            // 更新按钮样式
+            if (minutes === 20) {
+                btn20.className = "mode-btn px-3 py-1 text-sm rounded transition bg-blue-600 hover:bg-blue-500 text-white font-medium ring-2 ring-blue-400";
+                btn30.className = "mode-btn px-3 py-1 text-sm rounded transition bg-slate-700 hover:bg-slate-600 text-gray-300";
+            } else {
+                btn20.className = "mode-btn px-3 py-1 text-sm rounded transition bg-slate-700 hover:bg-slate-600 text-gray-300";
+                btn30.className = "mode-btn px-3 py-1 text-sm rounded transition bg-blue-600 hover:bg-blue-500 text-white font-medium ring-2 ring-blue-400";
+            }
+
+            updateDisplay();
+            statusEl.textContent = "READY";
+            displayEl.classList.remove('text-red-400', 'animate-pulse');
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (timeLeft <= 0) return;
+            
+            isRunning = true;
+            statusEl.textContent = "WRITING...";
+            
+            // 更新按钮 UI
+            startBtn.classList.replace('bg-emerald-500', 'bg-amber-500');
+            startBtn.classList.replace('hover:bg-emerald-600', 'hover:bg-amber-600');
+            startText.textContent = "暂停";
+            startIcon.className = "fa-solid fa-pause";
+
+            timerId = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+
+                if (timeLeft <= 0) {
+                    finishTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerId);
+            statusEl.textContent = "PAUSED";
+            
+            // 恢复按钮 UI
+            startBtn.classList.replace('bg-amber-500', 'bg-emerald-500');
+            startBtn.classList.replace('hover:bg-amber-600', 'hover:bg-emerald-600');
+            startText.textContent = "继续";
+            startIcon.className = "fa-solid fa-play";
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = totalTime;
+            updateDisplay();
+            statusEl.textContent = "READY";
+            startText.textContent = "开始"; // Reset text to Start
+            displayEl.classList.remove('text-red-400', 'animate-pulse');
+        }
+
+        function finishTimer() {
+            pauseTimer();
+            statusEl.textContent = "TIME'S UP";
+            startBtn.disabled = true;
+            startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            alert("时间到！请停止书写。");
+        }
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            displayEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+            // 最后5分钟变红提醒
+            if (timeLeft < 300 && timeLeft > 0) {
+                displayEl.classList.add('text-red-400');
+            } else {
+                displayEl.classList.remove('text-red-400');
+            }
+        }
+
+        // 2. 字数统计逻辑
+        answerArea.addEventListener('input', function() {
+            const text = this.value.trim();
+            // 使用正则匹配非空白字符序列
+            // 雅思计算字数主要看空格分隔的单词
+            const words = text === '' ? 0 : text.split(/\s+/).length;
+            wordCountEl.textContent = words;
+            
+            // 简单的字数达标视觉反馈 (Task 1: 150, Task 2: 250)
+            const target = currentMode === 20 ? 150 : 250;
+            if (words >= target) {
+                wordCountEl.parentElement.classList.replace('bg-blue-50', 'bg-green-100');
+                wordCountEl.parentElement.classList.replace('text-blue-800', 'text-green-800');
+                wordCountEl.parentElement.classList.replace('border-blue-100', 'border-green-200');
+            } else {
+                wordCountEl.parentElement.classList.replace('bg-green-100', 'bg-blue-50');
+                wordCountEl.parentElement.classList.replace('text-green-800', 'text-blue-800');
+                wordCountEl.parentElement.classList.replace('border-green-200', 'border-blue-100');
+            }
+        });
+
+        // 3. 复制功能
+        function copyText() {
+            answerArea.select();
+            document.execCommand('copy');
+            // 简单的提示
+            const originalText = document.querySelector('.fa-copy').parentElement.innerHTML;
+            const btn = document.querySelector('.fa-copy').parentElement;
+            btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> 已复制';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        // 页面关闭/刷新警告
+        window.onbeforeunload = function() {
+            if (answerArea.value.trim().length > 0) {
+                return "您有未保存的内容，确定要离开吗？";
+            }
+        };
+
+    </script>
+</body>
+</html>
