@@ -88,10 +88,19 @@
         }
         .max-w-5xl { max-width: 64rem; }
         .mx-auto { margin-left: auto; margin-right: auto; }
+        .hidden { display: none; }
+        .text-red-500 { color: #ef4444; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Notification Banner (hidden by default) -->
+        <div id="notification" class="bg-red-500 text-white rounded-lg shadow-lg p-4 mb-6 hidden">
+            <div class="flex items-center justify-center">
+                <span class="text-xl font-bold">⏰ 时间到！Time's up!</span>
+            </div>
+        </div>
+
         <!-- Header -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">IELTS Writing Practice Tool</h1>
@@ -194,8 +203,7 @@
     <script>
         // Timer variables
         let timerInterval = null;
-        let totalSeconds = 20 * 60; // Default 20 minutes
-        let remainingSeconds = totalSeconds;
+        let remainingSeconds = 20 * 60;
         let isRunning = false;
         let selectedMinutes = 20;
 
@@ -208,6 +216,7 @@
         const timer30 = document.getElementById('timer30');
         const writingArea = document.getElementById('writingArea');
         const wordCount = document.getElementById('wordCount');
+        const notification = document.getElementById('notification');
 
         // Timer functions
         function updateTimerDisplay() {
@@ -238,7 +247,10 @@
                     } else {
                         // Timer finished
                         pauseTimer();
-                        alert('时间到！Time\'s up!');
+                        notification.classList.remove('hidden');
+                        setTimeout(() => {
+                            notification.classList.add('hidden');
+                        }, 5000); // Hide after 5 seconds
                     }
                 }, 1000);
             }
@@ -264,8 +276,7 @@
         function setTimer(minutes) {
             pauseTimer();
             selectedMinutes = minutes;
-            totalSeconds = minutes * 60;
-            remainingSeconds = totalSeconds;
+            remainingSeconds = minutes * 60;
             updateTimerDisplay();
             
             // Update button styles
