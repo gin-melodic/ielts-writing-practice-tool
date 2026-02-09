@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Writing Practice Tool</title>
+    <style>
+        /* Tailwind CSS classes - using inline styles as fallback */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f3f4f6; min-height: 100vh; }
+        .container { max-width: 80rem; margin: 0 auto; padding: 2rem 1rem; }
+        .bg-white { background-color: white; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .p-6 { padding: 1.5rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .text-center { text-align: center; }
+        .text-blue-600 { color: #2563eb; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-500 { color: #6b7280; }
+        .text-white { color: white; }
+        .text-red-600 { color: #dc2626; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .block { display: block; }
+        .w-full { width: 100%; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .border { border-width: 1px; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .resize-none { resize: none; }
+        textarea, input { 
+            width: 100%; 
+            padding: 0.75rem 1rem; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.5rem; 
+            outline: none;
+        }
+        textarea:focus, input:focus { 
+            outline: 2px solid #2563eb; 
+            outline-offset: 2px;
+        }
+        button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .bg-green-500 { background-color: #10b981; }
+        .bg-yellow-500 { background-color: #f59e0b; }
+        .bg-red-500 { background-color: #ef4444; }
+        .bg-blue-500:hover { background-color: #2563eb; }
+        .bg-green-500:hover { background-color: #059669; }
+        .bg-yellow-500:hover { background-color: #d97706; }
+        .bg-red-500:hover { background-color: #dc2626; }
+        .opacity-50 { opacity: 0.5; }
+        .cursor-not-allowed { cursor: not-allowed; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .gap-6 { gap: 1.5rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-3 { gap: 0.75rem; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .h-full { height: 100%; }
+        .ring-2 { box-shadow: 0 0 0 2px currentColor; }
+        .ring-blue-700 { --tw-ring-color: #1d4ed8; outline: 2px solid #1d4ed8; }
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        .max-w-5xl { max-width: 64rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">IELTS Writing Practice Tool</h1>
+            
+            <!-- Question Input Area (不计入单词数) -->
+            <div class="mb-6">
+                <label for="questionInput" class="block text-gray-700 font-semibold mb-2">
+                    题目 (Question - not counted in word count):
+                </label>
+                <textarea 
+                    id="questionInput" 
+                    placeholder="粘贴题目到这里... Paste your question here..."
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows="4"
+                    spellcheck="false"
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- Timer and Word Count Panel -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Timer Section -->
+                <div class="text-center">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">倒计时 (Timer)</h2>
+                    <div class="mb-4">
+                        <div class="flex justify-center gap-4 mb-4">
+                            <button 
+                                id="timer20" 
+                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition timer-preset"
+                            >
+                                20 分钟
+                            </button>
+                            <button 
+                                id="timer30" 
+                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition timer-preset"
+                            >
+                                30 分钟
+                            </button>
+                        </div>
+                        <div id="timerDisplay" class="text-5xl font-bold text-gray-800 mb-4">
+                            20:00
+                        </div>
+                        <div class="flex justify-center gap-3">
+                            <button 
+                                id="startBtn" 
+                                class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold"
+                            >
+                                开始 (Start)
+                            </button>
+                            <button 
+                                id="pauseBtn" 
+                                class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition font-semibold"
+                                disabled
+                            >
+                                暂停 (Pause)
+                            </button>
+                            <button 
+                                id="resetBtn" 
+                                class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                            >
+                                重置 (Reset)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Word Count Section -->
+                <div class="text-center">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">字数统计 (Word Count)</h2>
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <div class="text-6xl font-bold text-blue-600 mb-2">
+                            <span id="wordCount">0</span>
+                        </div>
+                        <div class="text-gray-600">words</div>
+                        <div class="mt-4 text-sm text-gray-500">
+                            <div>Task 1 推荐: 150+ words</div>
+                            <div>Task 2 推荐: 250+ words</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Writing Area -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <label for="writingArea" class="block text-gray-700 font-semibold mb-2">
+                你的答案 (Your Answer):
+            </label>
+            <textarea 
+                id="writingArea" 
+                placeholder="在这里开始写作... Start writing here..."
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                rows="20"
+                spellcheck="false"
+            ></textarea>
+        </div>
+    </div>
+
+    <script>
+        // Timer variables
+        let timerInterval = null;
+        let totalSeconds = 20 * 60; // Default 20 minutes
+        let remainingSeconds = totalSeconds;
+        let isRunning = false;
+        let selectedMinutes = 20;
+
+        // DOM elements
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const timer20 = document.getElementById('timer20');
+        const timer30 = document.getElementById('timer30');
+        const writingArea = document.getElementById('writingArea');
+        const wordCount = document.getElementById('wordCount');
+
+        // Timer functions
+        function updateTimerDisplay() {
+            const minutes = Math.floor(remainingSeconds / 60);
+            const seconds = remainingSeconds % 60;
+            timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            // Change color when time is running out
+            if (remainingSeconds <= 60) {
+                timerDisplay.classList.add('text-red-600');
+            } else {
+                timerDisplay.classList.remove('text-red-600');
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                pauseBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                timerInterval = setInterval(() => {
+                    if (remainingSeconds > 0) {
+                        remainingSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        // Timer finished
+                        pauseTimer();
+                        alert('时间到！Time\'s up!');
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                pauseBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            remainingSeconds = selectedMinutes * 60;
+            updateTimerDisplay();
+        }
+
+        function setTimer(minutes) {
+            pauseTimer();
+            selectedMinutes = minutes;
+            totalSeconds = minutes * 60;
+            remainingSeconds = totalSeconds;
+            updateTimerDisplay();
+            
+            // Update button styles
+            if (minutes === 20) {
+                timer20.classList.add('ring-2', 'ring-blue-700');
+                timer30.classList.remove('ring-2', 'ring-blue-700');
+            } else {
+                timer30.classList.add('ring-2', 'ring-blue-700');
+                timer20.classList.remove('ring-2', 'ring-blue-700');
+            }
+        }
+
+        // Word count function
+        function updateWordCount() {
+            const text = writingArea.value.trim();
+            if (text === '') {
+                wordCount.textContent = '0';
+                return;
+            }
+            
+            // Split by whitespace and filter out empty strings
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+            wordCount.textContent = words.length;
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        timer20.addEventListener('click', () => setTimer(20));
+        timer30.addEventListener('click', () => setTimer(30));
+        writingArea.addEventListener('input', updateWordCount);
+
+        // Initialize
+        updateTimerDisplay();
+        timer20.classList.add('ring-2', 'ring-blue-700');
+        pauseBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    </script>
+</body>
+</html>
